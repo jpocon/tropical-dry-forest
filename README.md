@@ -1,14 +1,3 @@
----
-title: 'Global Analysis of Tropical Dry Forest Extent and Cover'
-author: "Jonathan P. Ocón"
-output: pdf_document
----
-
-```{r setup, include = F}
-library(reticulate)
-knitr::opts_chunk$set(echo = T, eval = F)
-```
-
 # Publication
 
 Ocón, J. P., Ibanez, T., Franklin, J., Pau, S., Keppel, G., Rivas-Torres, G., ... & Gillespie, T. W. (2021). Global tropical dry forest extent and cover: A comparative study of bioclimatic definitions using two climatic data sets. PloS one, 16(5), **[e0252063](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0252063)**.
@@ -29,7 +18,6 @@ We collected data from three climatic data sets (Worldclim, CHELSA, Global Aridi
 
 To help process large amounts of raw data, we clipped data to our study area and compressed the files by converting nodata values and datatypes.\
 
-\tiny
 ```{python}
 
 #Functions for Data Compression and Clipping to Study Areas
@@ -56,13 +44,11 @@ def compress(tif):
         dest.write(arr)
 
 ```
-\normalsize
 
 ## 1. Global Precipitation Measurement (GPM) IMERG L3 (Huffman  et al., 2019)
 
 We collected the Global Precipitation Measurement Integrated Multi-satellitE Retrievals for Global Precipitations Measurement (IMERG) Level 3 monthly precipitation data (mm/hour) at 0.1 deg spatial resolution (or approximately 11 km at the equator) (Huffman et al., 2019).  However, the 4.25-year time series did not appear long enough to include in the analyses and contained a number of extremely high and low precipitation values.\
 
-\tiny
 ```{python}
 
 #------------------------------------
@@ -219,7 +205,6 @@ CopyDatasetInfo(extent100,dsOut)
 bandOut=dsOut.GetRasterBand(1)
 BandWriteArray(bandOut,dataOut)
 ```
-\normalsize
 
 ## 2. Worldclim (Fick and Hijmans, 2017)
 
@@ -242,7 +227,6 @@ The layers produced with this data match those of Worldclim (see previous sectio
 
 Drylands and associated dry forest extent has been tested at an aridity index of less than 0.65 (Bastin et al., 2017).  We compare the climatic definitions (see next section) of tropical dry forest against this aridity threshold. To test global aridity index, or the ratio of potential evapotranspiration to annual precipitation, we collected data from the Global Aridity and PET database, an addition of the Worldclim data set (Trabucco and Zomer, 2019).\
 
-\tiny
 ```{python}
 
 #------------------------------------
@@ -334,13 +318,11 @@ def MAT(mat):
         dset.write(arr)
 
 ```
-\normalsize
 
 #### ENVIREM (Title and Bemmels, 2018)
 
 To obtain the aridity index for CHELSA data, we used the ENVIronmental Rasters for Ecological Modeling (ENVIREM) R-package (Title and Bemmels, 2018) to produce a global annual potential evapotranspiration raster file, which was then used to calculate aridity using the equation: annual precipitation / potential evapotranspiration (Bastin et al., 2017; Trabucco and Zomer, 2019).
 
-\tiny
 ```{r}
 
 #------------------------------------
@@ -421,7 +403,6 @@ ai <- ap/pet
 writeRaster(ai, filename = 'ai.tif', format = 'GTiff')
 
 ```
-\normalsize
 
 # Layering Climatic Definitions of Tropical Dry Forest
 
@@ -441,7 +422,6 @@ Tropical dry forest extent from DryFlor were calculated as annual precipitation 
 
 The following code is for overlaying the necessary climatic layers for Murphy and Lugo definition of tropical dry forest. It can be adapted for FAO and DryFlor./
 
-\tiny
 ```{python}
 
 # Define function to extract the dry seasons for each definition
@@ -491,7 +471,6 @@ def final_murph(out_murph):
 final_murph(out_murph)
 
 ```
-\normalsize
 
 # Regional Tropical Dry Forest Extent and Cover
 
@@ -509,7 +488,6 @@ To analyze this regional data, we organized the (1) area calculations (python), 
 
 (1) Area Calculations:\
 
-\tiny
 ```{python}
 
 #--------------------
@@ -990,13 +968,11 @@ bio_4 <- table_4 %>%
   write_csv('bio_4_plots_agree.csv')
 
 ```
-\normalsize
 
 ## Global Forest Cover (Hansen et al., 2013)
 
 To analyze and calculate global tropical dry forest cover (Hansen et al., 2013), we used the cloud-based geospatial analysis platform Google Earth Engine (Gorelick et al. 2017).  The advantage to using Earth Engine is the computing power needed to process large amounts of forest cover data (over 500 GB at pantropical scale).\
 
-\tiny
 ```{js}
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1147,14 +1123,12 @@ Export.image.toDrive({
 });
 
 ```
-\normalsize
 
 # Statistical Analyses of Tropical Dry Forest Extent
 
 Global, regions, Biodiversity Hotspots, countries, and islands level data on area of tropical dry forest extent based on climatic definitions and data sets were examined for a normal distribution using one-sample Shapiro-Wilk normality test for small samples (< 30) and Kolmogorov-Smirnov tests (> 30).  Parametric (T-tests) and non-parametric (Wilcoxon rank sum test) tests were used to identify significant differences among climatic definitions and between Worldclim and CHELSA data sets at a global, regional (regions, Biodiversity Hotspots, countries), and local (island archipelagos) spatial scales. 
 
 ## Non-parametric and Paired T-tests
-\tiny
 ```{r}
 
 #### n < 50 (Ecos, Hotspots, Regions) ####
@@ -1199,14 +1173,12 @@ for (j in unique(def)){
 }
 
 ```
-\normalsize
 
 # Data Visualization
 
 The final chunks of code were used to create visualizations of our analyses. These include density charts and box plots for statistical analysis and dozens of global, regional, and local maps of tropical dry forest extent and cover.
 
 ## Statistical Charts
-\tiny
 ```{r}
 
 ## Plots
@@ -1273,10 +1245,8 @@ ggplot(df, aes(df$value, group = df$text, fill = df$text)) +
     panel.grid.minor = element_line(size = 1 , linetype = "solid" , colour = "white"))
 
 ```
-\normalsize
 
 ## Tropical Dry Forest Maps
-\tiny
 ```{r}
 
 #polygonize rasters into shapefile - ONLY RUN ONCE####
@@ -2174,7 +2144,6 @@ for (i in 1:5){
 } #Worldclim
 
 ```
-\normalsize
 
 # References
 
