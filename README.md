@@ -1,3 +1,12 @@
+---
+layout: archive
+title: "Tropical Dry Forest"
+permalink: /tropical-dry-forest/
+author_profile: true
+---
+
+**[Complete set of programming scripts used in this analysis.](https://github.com/jpocon/tropical-dry-forest)**
+
 # Publication
 
 Ocón, J. P., Ibanez, T., Franklin, J., Pau, S., Keppel, G., Rivas-Torres, G., ... & Gillespie, T. W. (2021). Global tropical dry forest extent and cover: A comparative study of bioclimatic definitions using two climatic data sets. PloS one, 16(5), **[e0252063](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0252063)**.
