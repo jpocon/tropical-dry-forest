@@ -1,0 +1,129 @@
+---
+title: "CHELSA_AI"
+author: "J.P. Ocon"
+date: "November 6, 2019"
+output: html_document
+---
+
+### Calculating ENVIREM variables with CHELSA climate data
+
+To compute an Aridity Index (AI) for the CHELSA (Climatologies at High resolution for the Earth's land Surface Areas) climate dataset (Karger et al. 2017), we are using the ENVIronmental Rasters for Ecological Modeling (ENVIREM) R package (Title and Bemmels, 2018). The calculations built into the package specifically for AI come from the Global PET and Aridity dataset (Trabucco and Zomer, 2019), which we use for the Worldclim 2 AI rasters in our tropical dry forest analysis. 
+
+Generating global AI rasters with CHELSA data allows us to map pantropic dry forest extents at an AI of <0.65 (Bastin et al., 2017) and compare to the same extents generated with the Worldclim 2 dataset (Fick and Hijmans, 2017).
+
+Note from R package authors: "For high resolution datasets (for example, 2.5 arcmin resolution or finer), computer memory limits may be an issue." To address this concern, this work used computational and storage services associated with the Hoffman2 Shared Cluster provided by UCLA Institute for Digital Research and Education's Research Technology Group.
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+
+## check that these GDAL functions are accessible for later
+## should produce complete file paths
+Sys.which('gdalinfo')
+Sys.which('gdal_translate')
+```
+
+### Solar radiation rasters
+
+The solar radiation rasters contain data for the entire globe, and are provided at a finer resolution than the CHELSA data. We read them in, mask them to match CHELSA, and resample to the same resolution.
+
+```{r}
+require(raster)
+
+solradDir <- '/CHELSA/ET_SolRad'
+outputDir <- '/processed'
+
+## read in the solar radiation rasters
+solradStack <- stack(paste(solradDir , '/et_solrad_' , 1:12 , sep = ''))
+
+## read in a CHELSA raster as a template
+template <- raster('/bio_1.tif')
+
+## resample and mask according to template
+solrad <- resample(solradStack , template)
+solrad <- mask(solrad , template)
+
+for (k in 1:nlayers(solrad)) {
+
+  fn <- paste(outputDir , '/' , names(solrad)[k] , '.tif' , sep = '')
+  cat(fn , '\n')
+    writeRaster(solrad[[k]] , fn , format = 'GTiff' , overwrite = TRUE)
+}
+
+## clear temp file cache
+removeTmpFiles(h = 0)
+```
+
+### Clip rasters to tropics
+
+We are running our tropical dry forest analysis across the pantropics between 30 N/S. We define this extent with a polygon, then read in each input raster, crop/mask it and write to disk, to a directory called 'tropics'.
+
+```{r}
+library(rgeos)
+library(maptools)
+data(wrld_simpl)
+
+## create tropics polygon to clip rasters to
+## polygons start and end at same point
+poly <- readWKT("POLYGON((
+  -180.0001388889999987 30.0,
+  179.9998596710000527 30.0,
+  179.9998596710000527 -30.0,
+  -180.0001388889999987 -30.0,
+  -180.0001388889999987 30.0 
+))", p4s = CRS("+proj=longlat +datum=WGS84"))
+
+## check the polygon was created correctly
+plot(poly, border = 'blue', mar = c(0,0,0,0))
+plot(wrld_simpl, add=TRUE, lwd=0.2)
+
+require(raster)
+
+## crop and mask input rasters
+inputDir <- "/processed"
+outputDir <- "/tropics"
+
+files <- list.files(inputDir , pattern = '.tif' , full.names = TRUE)
+
+r <- stack(files)
+r <- crop(r , poly)
+r <- mask(r , poly)
+
+for (i in 1:nlayers(r)) {
+  fn <- paste(outputDir , '/' , names(r)[i] , '.tif' , sep = '')
+  writeRaster(r[[i]] , filename = fn , format = 'GTiff' , overwrite = TRUE)
+}
+
+## clear temp file cache
+removeTmpFiles(h = 0)
+
+## check conversion
+library(envirem)
+
+verifyFileStructure("/tropics" , returnFileNames = FALSE , rasterExt = '.tif')
+```
+
+### Genearet ENVIREM rasters
+
+We supply the processed input rasters to the envirem package's main function, 'generateRasters'. As we are inputting high resolution rasters, we provide a tileNum of 24, which means that rasters will be split into 24 pieces. We also specify var = 'all' because we want all available variables to be generated.
+
+The input rasters come from CHELSA where temperature rasters are in units of degrees C * 10. Therefore, we will inform the function of this with tempScale = 10.
+
+```{r}
+require(envirem)
+require(raster)
+
+inputDir <- '/tropics'
+outDir <- '/envirem'
+
+## resolution of 30arcsec, so we will split rasters into tiles to ease the computational burden
+tileNum <- 24
+
+generateRasters(var = 'all' , maindir = inputDir , outputDir = outDir , nTiles = tileNum , tempScale = 10)
+
+## clear temp file cache
+removeTmpFiles(h = 0)
+
+## check rasters
+setwd('/envirem')
+head(list.files())
+```
