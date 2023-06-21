@@ -3,11 +3,11 @@
 
 **[Complete set of programming scripts used in this analysis.](https://github.com/jpocon/tropical-dry-forest)**
 
-# Publication
+## Publication
 
 Ocón, J. P., Ibanez, T., Franklin, J., Pau, S., Keppel, G., Rivas-Torres, G., ... & Gillespie, T. W. (2021). Global tropical dry forest extent and cover: A comparative study of bioclimatic definitions using two climatic data sets. PloS one, 16(5), **[e0252063](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0252063)**.
 
-# Overview
+## Overview
 
 This appendix provides code used to accomplish a global analysis of tropical dry forest extent and cover based on a suite of remote sensing and modeled climate and forest data, as well as GIS layers of political and conservation boundaries. 
 
@@ -17,7 +17,7 @@ We also lacked one raw data set (Aridity Index for CHELSA -- see below), and use
 
 What is not included are the house-keeping code used to set up script environments, call in modules or packages, and manage files. Only the "meat" of the data processing is included. For entire scripts, please navigate to **[lead author's website](https://studyingplace.space/global-tdf)**.
 
-# Processing Remote Sensing and Modeled Climate Data
+## Processing Remote Sensing and Modeled Climate Data
 
 We collected data from three climatic data sets (Worldclim, CHELSA, Global Aridity and PET), biome defining shapefiles (WWF Ecoregions), a compilation of 579 tropical dry forest field plots, as well as the latest forest cover data to estimate the extent for tropical dry forest regions from 2000 to 2018 (Global Forest Change)(Hansen et al., 2013).
 
@@ -50,7 +50,7 @@ def compress(tif):
 
 ```
 
-## 1. Global Precipitation Measurement (GPM) IMERG L3 (Huffman  et al., 2019)
+### 1. Global Precipitation Measurement (GPM) IMERG L3 (Huffman  et al., 2019)
 
 We collected the Global Precipitation Measurement Integrated Multi-satellitE Retrievals for Global Precipitations Measurement (IMERG) Level 3 monthly precipitation data (mm/hour) at 0.1 deg spatial resolution (or approximately 11 km at the equator) (Huffman et al., 2019).  However, the 4.25-year time series did not appear long enough to include in the analyses and contained a number of extremely high and low precipitation values.\
 
@@ -211,7 +211,7 @@ bandOut=dsOut.GetRasterBand(1)
 BandWriteArray(bandOut,dataOut)
 ```
 
-## 2. Worldclim (Fick and Hijmans, 2017)
+### 2. Worldclim (Fick and Hijmans, 2017)
 
 The second version of the Worldclim climate data released in 2016 includes monthly temperature and precipitation measurements from 9,000 and 60,000 weather stations respectively spanning 1970 to 2000.  These data were interpolated using thin‐plate splines with covariates including elevation, distance to the coast and three satellite‐derived covariates: maximum and minimum land surface temperature as well as cloud cover, obtained with the MODIS satellite platform (Fick and Hijmans, 2017).  The data sets include the monthly temperature and precipitation averages, as well as nineteen bioclimatic variables often used in species distribution modeling.  The spatial resolution of the data are 30 arc seconds or ~1 km resolution at the equator.
 
@@ -222,13 +222,13 @@ Layers produced with this data correspond to parameters set in each climatic def
 - Mean Annual Temperature (C)
 - No Freeze Mask (>0C)
 
-## 3. CHELSA (Karger et al., 2017)
+### 3. CHELSA (Karger et al., 2017)
 
 The second climate data set we use is the Climatologies at High resolution for the Earth's Land Surface Area (CHELSA) currently hosted by the Swiss Federal Institute for Forest, Snow and Landscape Research.  CHELSA includes monthly mean temperature and precipitation patterns from 1979 to 2013 and is based on a quasi-mechanistically statistical downscaling of the ERA interim global circulation model with a GPCC bias correction (Krager et al., 2017).  The data spatial resolutions are also 30 arc seconds or ~1 km resolution at the equator. 
 
 The layers produced with this data match those of Worldclim (see previous section).
 
-## 4. Aridity Index (Trabucco and Zomer, 2018)
+### 4. Aridity Index (Trabucco and Zomer, 2018)
 
 Drylands and associated dry forest extent has been tested at an aridity index of less than 0.65 (Bastin et al., 2017).  We compare the climatic definitions (see next section) of tropical dry forest against this aridity threshold. To test global aridity index, or the ratio of potential evapotranspiration to annual precipitation, we collected data from the Global Aridity and PET database, an addition of the Worldclim data set (Trabucco and Zomer, 2019).\
 
@@ -409,19 +409,19 @@ writeRaster(ai, filename = 'ai.tif', format = 'GTiff')
 
 ```
 
-# Layering Climatic Definitions of Tropical Dry Forest
+## Layering Climatic Definitions of Tropical Dry Forest
 
 For all definitions, we use frost-free regions (> 0C) in the tropics that also experience a mean annual temperature > 17C (Murphy and Lugo, 1986). 
 
-## 1. Murphy and Lugo (Holdridge, 1967; Murphy and Lugo, 1986)
+### 1. Murphy and Lugo (Holdridge, 1967; Murphy and Lugo, 1986)
 
 Tropical dry forest extent from Murphy and Lugo were calculated by subsetting areas with 250 to 2000 mm of annual precipitation with a dry season(s) of 4 to 7 months with less than 100 mm of precipitation a month (Holdridge, 1967; Murphy and Lugo, 1986).
 
-## 2. Food and Agriculture Organization (FAO) (Sunderland et al., 2015)
+### 2. Food and Agriculture Organization (FAO) (Sunderland et al., 2015)
 
 Tropical dry forest extent from the Food and Agriculture Organization of the United Nations (FAO) were created by subsetting areas with 500 to 1500 mm of annual precipitation with a dry period of 5 to 8 months with less than 100 mm of precipitation a month (Sunderland et al., 2015).
 
-## 3. DryFlor (Banda et al., 2016)
+### 3. DryFlor (Banda et al., 2016)
 
 Tropical dry forest extent from DryFlor were calculated as annual precipitation less than 1800 mm with a dry season of 3 to 6 months receiving less than 100 mm per month (Banda et al., 2016).
 
@@ -477,7 +477,7 @@ final_murph(out_murph)
 
 ```
 
-# Regional Tropical Dry Forest Extent and Cover
+## Regional Tropical Dry Forest Extent and Cover
 
 Originally launched to provide high-resolution global maps of forest cover change from 2000 – 2012 using Landsat 7 imagery, the Global Forest Change data set has grown to include time series analysis of Landsat 5, 7 and Landsat 8 imagery now covering 2000 – 2018 (Hansen et al., 2013).  Each pixel has a spatial resolution of 1 arc second, or roughly 30 m, and unsigned 8-bit values (0-255).  We identify areas with > 10% cover (encompasses mosaic of savannas and woodlands) and > 40% cover or forest for the year 2000 and 2018 (Bastin et al., 2017).  We utilize this as our primary data set to calculate tropical dry forest cover and loss.
 
@@ -1129,11 +1129,11 @@ Export.image.toDrive({
 
 ```
 
-# Statistical Analyses of Tropical Dry Forest Extent
+## Statistical Analyses of Tropical Dry Forest Extent
 
 Global, regions, Biodiversity Hotspots, countries, and islands level data on area of tropical dry forest extent based on climatic definitions and data sets were examined for a normal distribution using one-sample Shapiro-Wilk normality test for small samples (< 30) and Kolmogorov-Smirnov tests (> 30).  Parametric (T-tests) and non-parametric (Wilcoxon rank sum test) tests were used to identify significant differences among climatic definitions and between Worldclim and CHELSA data sets at a global, regional (regions, Biodiversity Hotspots, countries), and local (island archipelagos) spatial scales. 
 
-## Non-parametric and Paired T-tests
+### Non-parametric and Paired T-tests
 ```{r}
 
 #### n < 50 (Ecos, Hotspots, Regions) ####
@@ -1179,11 +1179,11 @@ for (j in unique(def)){
 
 ```
 
-# Data Visualization
+## Data Visualization
 
 The final chunks of code were used to create visualizations of our analyses. These include density charts and box plots for statistical analysis and dozens of global, regional, and local maps of tropical dry forest extent and cover.
 
-## Statistical Charts
+### Statistical Charts
 ```{r}
 
 ## Plots
@@ -1251,7 +1251,7 @@ ggplot(df, aes(df$value, group = df$text, fill = df$text)) +
 
 ```
 
-## Tropical Dry Forest Maps
+### Tropical Dry Forest Maps
 ```{r}
 
 #polygonize rasters into shapefile - ONLY RUN ONCE####
@@ -2150,7 +2150,7 @@ for (i in 1:5){
 
 ```
 
-# References
+## References
 
 Banda, K., Delgado-Salinas, A., Dexter, K. G., Linares-Palomino, R., Oliveira-Filho, A., Prado, D., ... & Weintritt, J. (2016). Plant diversity patterns in neotropical dry forests and their conservation implications. Science, 353(6306), 1383-1387.
 
