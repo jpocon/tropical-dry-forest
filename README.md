@@ -1,9 +1,5 @@
----
-layout: archive
-title: "Tropical Dry Forest"
-permalink: /tropical-dry-forest/
-author_profile: true
----
+
+# Mapping Pantropical Dry Forest
 
 **[Complete set of programming scripts used in this analysis.](https://github.com/jpocon/tropical-dry-forest)**
 
